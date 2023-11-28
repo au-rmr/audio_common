@@ -73,7 +73,7 @@ namespace audio_transport
           g_object_set( G_OBJECT(_sink), "location", dst_type.c_str(), NULL);
         }
 
-        _source = gst_element_factory_make("alsasrc", "source");
+        _source = gst_element_factory_make("pulsesrc", "source");
         // if device isn't specified, it will use the default which is
         // the alsa default source.
         // A valid device will be of the foram hw:0,0 with other numbers
