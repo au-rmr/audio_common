@@ -61,6 +61,10 @@ namespace audio_transport
         if (dst_type == "appsink")
         {
           _sink = gst_element_factory_make("appsink", "sink");
+          if (!_sink) {
+            ROS_ERROR_STREAM("Failed to create source");
+            exitOnMainThread(1);
+         }
           g_object_set(G_OBJECT(_sink), "emit-signals", true, NULL);
           g_object_set(G_OBJECT(_sink), "max-buffers", 100, NULL);
           g_signal_connect( G_OBJECT(_sink), "new-sample",
