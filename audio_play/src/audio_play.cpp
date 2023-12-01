@@ -25,7 +25,7 @@ namespace audio_transport
         std::string sample_format;
 
         // The destination of the audio
-        ros::param::param<std::string>("~dst", dst_type, "alsasink");
+        ros::param::param<std::string>("~dst", dst_type, "pulsesink");
         ros::param::param<std::string>("~device", device, std::string());
         ros::param::param<bool>("~do_timestamp", do_timestamp, true);
         ros::param::param<std::string>("~format", format, "mp3");
@@ -55,14 +55,14 @@ namespace audio_transport
             "layout", G_TYPE_STRING, "interleaved",
             NULL);
 
-        if (dst_type == "alsasink")
+        if (dst_type == "pulsesink")
         {
           _audio = gst_bin_new("audiobin");
           _convert = gst_element_factory_make("audioconvert", "convert");
           audiopad = gst_element_get_static_pad(_convert, "sink");
           _resample = gst_element_factory_make("audioresample", "resample");
 
-          _sink = gst_element_factory_make("alsasink", "sink");
+          _sink = gst_element_factory_make("pulsesink", "sink");
           g_object_set(G_OBJECT(_sink), "sync", FALSE, NULL);
           if (!device.empty()) {
             g_object_set(G_OBJECT(_sink), "device", device.c_str(), NULL);
@@ -80,7 +80,7 @@ namespace audio_transport
 
         if (format == "mp3")
         {
-          if (dst_type == "alsasink")
+          if (dst_type == "pulsesink")
           {
             _decoder = gst_element_factory_make("decodebin", "decoder");
             g_signal_connect(_decoder, "pad-added", G_CALLBACK(cb_newpad),this);
@@ -103,7 +103,7 @@ namespace audio_transport
         {
           g_object_set( G_OBJECT(_source), "caps", caps, NULL);
           g_object_set (G_OBJECT (_source), "format", GST_FORMAT_TIME, NULL);
-          if (dst_type == "alsasink")
+          if (dst_type == "pulsesink")
           {
             gst_bin_add_many( GST_BIN(_pipeline), _source, _audio, NULL);
             gst_element_link_many( _source, _audio, NULL);
