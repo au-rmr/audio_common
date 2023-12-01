@@ -74,6 +74,12 @@ namespace audio_transport
         }
 
         _source = gst_element_factory_make("pulsesrc", "source");
+        if (!_source) {
+            ROS_ERROR_STREAM("Failed to create source");
+            exitOnMainThread(1);
+        }
+     
+
         // if device isn't specified, it will use the default which is
         // the alsa default source.
         // A valid device will be of the foram hw:0,0 with other numbers
@@ -124,6 +130,11 @@ namespace audio_transport
             link_ok = gst_element_link_many( _source, _sink, NULL);
           } else {
             _filter = gst_element_factory_make("wavenc", "filter");
+	    if (!_filter) {
+               ROS_ERROR_STREAM("Failed to create filter");
+                exitOnMainThread(1);
+            }
+      
             gst_bin_add_many( GST_BIN(_pipeline), _source, _filter, _sink, NULL);
             link_ok = gst_element_link_many( _source, _filter, _sink, NULL);
           }
